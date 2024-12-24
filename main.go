@@ -1,14 +1,9 @@
 package main
 
 import (
-	"PassGet/modules/browser"
-	"log"
+	"PassGet/modules/run"
 )
 
 func main() {
-	err := browser.Get()
-	if err != nil {
-		log.Println("Get Browser Data Failed")
-		return
-	}
+	run.Run()
 }
