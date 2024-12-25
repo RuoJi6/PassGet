@@ -2,10 +2,8 @@ package run
 
 import (
 	"PassGet/modules/browser"
-	"PassGet/modules/finalshell"
-	"PassGet/modules/sunlogin"
-	"PassGet/modules/todesk"
-	"fmt"
+	browser2 "PassGet/modules/utils/browser"
+	"PassGet/modules/utils/browser/fileutil"
 	"github.com/urfave/cli/v2"
 	"log"
 	"os"
@@ -29,7 +27,7 @@ func Run() {
 				Name:  "browser",
 				Usage: "Get browser data",
 				Action: func(c *cli.Context) error {
-					err := browser.Get()
+					err := GetBrowser()
 					if err != nil {
 						log.Fatalf("get browser data error %v", err)
 					}
@@ -39,71 +37,49 @@ func Run() {
 				Name:  "nav",
 				Usage: "Get navicat data",
 				Action: func(c *cli.Context) error {
-					err := browser.Get()
-					if err != nil {
-						log.Fatalf("get browser data error %v", err)
-					}
+					GetNaviCat()
 					return nil
 				},
 			}, {
 				Name:  "scp",
 				Usage: "Get winscp data",
 				Action: func(c *cli.Context) error {
-					err := browser.Get()
-					if err != nil {
-						log.Fatalf("get browser data error %v", err)
-					}
+					GetWinSCP()
 					return nil
 				},
 			}, {
 				Name:  "filez",
 				Usage: "Get filezilla data",
 				Action: func(c *cli.Context) error {
-					err := browser.Get()
-					if err != nil {
-						log.Fatalf("get browser data error %v", err)
-					}
+					GetFileZilla()
 					return nil
 				},
 			}, {
 				Name:  "wifi",
 				Usage: "Get wifi data",
 				Action: func(c *cli.Context) error {
-					err := browser.Get()
-					if err != nil {
-						log.Fatalf("get browser data error %v", err)
-					}
+					GetWiFi()
 					return nil
 				},
 			}, {
 				Name:  "sun",
 				Usage: "Get sunlogin data",
 				Action: func(c *cli.Context) error {
-					err := sunlogin.Get()
-					if err == nil {
-						log.Fatalf("get browser data error %v", err)
-					}
+					GetSunlogin()
 					return nil
 				},
 			}, {
 				Name:  "tdesk",
 				Usage: "Get todesk data",
 				Action: func(c *cli.Context) error {
-					err := todesk.Get()
-					if err == nil {
-						log.Fatalf("get browser data error %v", err)
-					}
+					GetTodesk()
 					return nil
 				},
 			}, {
 				Name:  "fshell",
 				Usage: "Get finalshell data",
 				Action: func(c *cli.Context) error {
-					_, ServerDetails := finalshell.Get("")
-					if ServerDetails == nil {
-						log.Fatalf("get finalshell data error")
-					}
-					fmt.Println(ServerDetails)
+					GetFinalShell()
 					return nil
 				},
 			}, {
@@ -136,6 +112,16 @@ func Run() {
 					}
 					return nil
 				},
+			}, {
+				Name:  "scrt",
+				Usage: "Get SecureCRT data",
+				Action: func(c *cli.Context) error {
+					err := browser.Get()
+					if err != nil {
+						log.Fatalf("get SecureCRT data error %v", err)
+					}
+					return nil
+				},
 			},
 		},
 	}
@@ -144,6 +130,18 @@ func Run() {
 	}
 }
 func runAll() error {
-	fmt.Println("run all....")
+	err := GetBrowser()
+	if err != nil {
+		return err
+	}
+	GetTodesk()
+	GetSunlogin()
+	GetFinalShell()
+	GetNaviCat()
+	GetFileZilla()
+	GetWiFi()
+	if err := fileutil.CompressDir(browser2.OutputDir); err != nil {
+		log.Printf("compress error %v", err)
+	}
 	return nil
 }

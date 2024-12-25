@@ -6,17 +6,18 @@ import (
 )
 
 var (
-	HomeDir              = GetHomeDir()
-	WindowsStartMenu     = HomeDir + `\AppData\Roaming\Microsoft\Windows\Start Menu\Programs`
-	WindowsStartMenu2    = `C:\ProgramData\Microsoft\Windows\Start Menu\Programs`
-	WindowsDeskTop       = HomeDir + `\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup`
-	WindowsDirs          = []string{WindowsStartMenu, WindowsStartMenu2, WindowsDeskTop}
-	WindowsCredentials   = HomeDir + `\AppData\Local\Microsoft\Credentials`
-	FileZillaProfilesDir = HomeDir + `\AppData\Roaming\FileZilla\`
-	FileZillaProfile1    = `\recentservers.xml`
-	FileZillaProfile2    = `\sitemanager.xml`
-	WinSCPProfilePath    = HomeDir + `\AppData\Roaming\`
-	WinSCPProfile        = `\WinSCP.ini`
+	HomeDir                = GetHomeDir()
+	WindowsStartMenu       = HomeDir + `\AppData\Roaming\Microsoft\Windows\Start Menu\Programs`
+	WindowsStartMenu2      = `C:\ProgramData\Microsoft\Windows\Start Menu\Programs`
+	WindowsDeskTop         = HomeDir + `\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup`
+	WindowsDirs            = []string{WindowsStartMenu, WindowsStartMenu2, WindowsDeskTop}
+	WindowsCredentials     = HomeDir + `\AppData\Local\Microsoft\Credentials`
+	FileZillaProfilesDir   = HomeDir + `\AppData\Roaming\FileZilla\`
+	FileZillaProfile1      = `\recentservers.xml`
+	FileZillaProfile2      = `\sitemanager.xml`
+	WinSCPProfilePath      = HomeDir + `\AppData\Roaming\`
+	WinSCPProfile          = `\WinSCP.ini`
+	TortoiseSVNProfilePath = HomeDir + `\AppData\Roaming\Subversion\auth\svn.simple`
 )
 
 const (

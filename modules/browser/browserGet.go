@@ -3,7 +3,6 @@ package browser
 import (
 	"PassGet/modules/browser/pick"
 	br "PassGet/modules/utils/browser"
-	"PassGet/modules/utils/browser/fileutil"
 )
 
 func Get() error {
@@ -18,10 +17,7 @@ func Get() error {
 			//log.Errorf("get browsing data error %v", err)
 			continue
 		}
-		data.Output(br.OutputDir, b.Name(), br.OutputFormat)
-	}
-	if err = fileutil.CompressDir(br.OutputDir); err != nil {
-		//log.Errorf("compress error %v", err)
+		data.Output(br.OutputDir+"/browser", b.Name(), br.OutputFormat)
 	}
 	//log.Debug("compress success")
 	return nil

@@ -4,6 +4,7 @@ import (
 	"archive/zip"
 	"bytes"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"strings"
@@ -106,18 +107,44 @@ func CompressDir(dir string) error {
 		_ = zipWriter.Close()
 	}()
 
-	for _, file := range files {
-		if err := addFileToZip(zipWriter, filepath.Join(dir, file.Name())); err != nil {
-			return fmt.Errorf("failed to add file to zip: %w", err)
+	err = filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
 		}
-	}
+
+		// 如果是文件，添加到 zip 存档
+		if !info.IsDir() {
+			// 获取文件相对于 src 目录的相对路径
+			relPath, err := filepath.Rel(dir, path)
+			if err != nil {
+				return err
+			}
+
+			// 创建一个 zip 文件
+			f, err := zipWriter.Create(relPath)
+			if err != nil {
+				return err
+			}
+
+			// 打开文件并写入 zip 存档
+			r, err := os.Open(path)
+			if err != nil {
+				return err
+			}
+			defer r.Close()
+
+			_, err = io.Copy(f, r)
+			return err
+		}
+		return nil
+	})
 
 	if err := zipWriter.Close(); err != nil {
 		return fmt.Errorf("error closing zip writer: %w", err)
 	}
 
 	zipFilename := filepath.Join(dir, filepath.Base(dir)+".zip")
-	return writeFile(buffer, zipFilename)
+	return WriteFile(buffer, zipFilename)
 }
 
 func addFileToZip(zw *zip.Writer, filename string) error {
@@ -142,7 +169,7 @@ func addFileToZip(zw *zip.Writer, filename string) error {
 	return nil
 }
 
-func writeFile(buffer *bytes.Buffer, filename string) error {
+func WriteFile(buffer *bytes.Buffer, filename string) error {
 	outFile, err := os.Create(filename)
 	if err != nil {
 		return fmt.Errorf("error creating output file %s: %w", filename, err)

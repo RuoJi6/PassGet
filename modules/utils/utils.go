@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"fmt"
 	"os"
 	"os/user"
 	"path/filepath"
@@ -50,4 +51,26 @@ func ListFilesAndDirs(directory string) ([]string, []string, error) {
 func CheckIsAdmin() bool {
 	_, err := user.Current()
 	return err == nil
+}
+func OutPutToFile(content string, dir string) error {
+	_, err := os.Stat(dir)
+	if os.IsNotExist(err) {
+		// 目录不存在，创建目录
+		err = os.MkdirAll(dir, 0755)
+		if err != nil {
+			return err
+		}
+	}
+	file, err := os.OpenFile(fmt.Sprintf("%s/results.txt", dir), os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	// 写入内容
+	_, err = file.WriteString(content)
+	if err != nil {
+		return err
+	}
+	return nil
 }
