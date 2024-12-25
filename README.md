@@ -11,16 +11,18 @@
 
 ## Export Supported App
 
-| App            | Supported |
-|:-------------------|:--------:|
-| FinalShell |    ✅     |
-| WinSCP |    ✅     |
-| Navicat  |    ✅     |
-| Browser |    ✅     |
-| FileZilla  |    ✅     |
-| Wifi              |    ✅     |
-| SunLogin       |    ✅     |
-| Todesk       |    ✅     |
+| App         | Supported |
+|:------------|:--------:|
+| FinalShell  |     ✅    |
+| WinSCP      |     ✅    |
+| Navicat     |     ✅    |
+| Browser     |     ✅    |
+| FileZilla   |     ✅    |
+| Wifi        |     ✅    |
+| SunLogin    |     ✅    |
+| TortoiseSVN |  Working |
+| MobaltXTerm |  Working |
+| XManager    |     Working     |
 
 ## Supported Browser
 
