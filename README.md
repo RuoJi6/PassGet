@@ -1,7 +1,5 @@
 # PassGet--A Tool For Windows Post-exploitation
 
-------
-
 ## Reference
 
 - https://github.com/moonD4rk/HackBrowserData
@@ -9,8 +7,6 @@
 - https://cloud.tencent.com/developer/article/1684021
 - https://github.com/passer-W/FinalShell-Decoder
 - https://github.com/RowTeam/SharpDecryptPwd
-
-------
 
 
 ## Export Supported App
@@ -25,8 +21,6 @@
 | Wifi              |    ✅     |
 | SunLogin       |    ✅     |
 | Todesk       |    ✅     |
-
-------
 
 ## Supported Browser
 

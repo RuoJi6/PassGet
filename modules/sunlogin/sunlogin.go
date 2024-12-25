@@ -41,6 +41,7 @@ func (C *Client) GetFromProcess() {
 		defer windows.CloseHandle(handle)
 
 		pattern := []byte("<f f=yahei.28 c=color_edit >")
+		//pattern := []byte(`<f f=yahei.28 c=color_edit >.*</f>`)
 		IDs, _, err := remote.SearchMemory(handle, pattern, false)
 		if err != nil {
 			continue
@@ -59,27 +60,39 @@ func (C *Client) GetFromProcess() {
 				}
 			}
 		}
+		for _, addr := range IDs {
+			data, err := remote.ReadMemory(handle, addr, 900)
+			if err != nil {
+				fmt.Printf("读取内存失败: %v\n", err)
+				continue
+			}
 
-		passwordPattern := []byte("<f f=yahei.28 c=color_edit >")
-		passwordArray, _, err := remote.SearchMemory(handle, passwordPattern, false)
-		if err != nil {
-			continue
-		}
-		if len(passwordArray) >= 9 {
-			for _, addr := range passwordArray {
-				data, err := remote.ReadMemory(handle, addr, 900)
-				if err != nil {
-					fmt.Printf("读取内存失败: %v\n", err)
-					continue
-				}
-
-				password := remote.ExtractBetween(string(data), ">", "</f>")
-				if len(password) == 6 {
-					C.Pass = password
-					break
-				}
+			password := remote.ExtractBetween(string(data), ">", "</f>")
+			if len(password) == 6 {
+				C.Pass = password
+				break
 			}
 		}
+		//passwordPattern := []byte("<f f=yahei.28 c=color_edit >")
+		//passwordArray, _, err := remote.SearchMemory(handle, passwordPattern, false)
+		//if err != nil {
+		//	continue
+		//}
+		//if len(passwordArray) >= 9 {
+		//	for _, addr := range passwordArray {
+		//		data, err := remote.ReadMemory(handle, addr, 900)
+		//		if err != nil {
+		//			fmt.Printf("读取内存失败: %v\n", err)
+		//			continue
+		//		}
+		//
+		//		password := remote.ExtractBetween(string(data), ">", "</f>")
+		//		if len(password) == 6 {
+		//			C.Pass = password
+		//			break
+		//		}
+		//	}
+		//}
 		if C.ID != "" && C.Pass != "" {
 			C.InstallPath = proc.Path
 			C.ProcName = proc.Name

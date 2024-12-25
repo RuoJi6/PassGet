@@ -29,7 +29,10 @@ func ReadMemory(handle windows.Handle, address uintptr, size uint32) ([]byte, er
 func SearchMemory(handle windows.Handle, pattern []byte, todesk bool) ([]uintptr, []byte, error) {
 	var results []uintptr
 	var memoryInfo windows.MemoryBasicInformation
-	datas := make([]byte, 0)
+	var datas []byte
+	if todesk {
+		datas = make([]byte, 0)
+	}
 	address := uintptr(0)
 	for {
 		err := windows.VirtualQueryEx(handle, address, &memoryInfo, unsafe.Sizeof(memoryInfo))
