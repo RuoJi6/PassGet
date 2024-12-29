@@ -1,22 +1,74 @@
-# action 流名称
-name: build-and-deploy Go
+name: Build and Release
 
 on:
-  push:        #监听 push 事件
-    branches: 
-      - main   #监听分支
-      
+  push:
+    tags:
+      - 'v*'
+
 jobs:
   build:
-    # 不要用22的版本
-    runs-on: ubuntu-20.04
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-20.04]
+        arch: [amd64, arm64, 386]
     steps:
-    - uses: actions/checkout@v3
+    - name: Check out code
+      uses: actions/checkout@v3
 
-    - name: 1、set up golang 安装 go 环境
+    - name: Set up Go
       uses: actions/setup-go@v4
       with:
         go-version: '1.20'
 
-    - name: 2、go build 打包go程序
-      run: GOOS=windows GOARCH=amd64  go build -ldflags="-s -w" -trimpath -o PassGet main.go
+    - name: Build binary
+      run: |
+        GOOS=windows GOARCH=${{ matrix.arch }} go build -ldflags="-s -w" -trimpath -o build/${{ matrix.arch }}/PassGet.exe main.go
+
+    - name: Install UPX
+      run: |
+        sudo apt-get install -y upx
+
+    - name: Compress binary with UPX
+      run: |
+        upx build/${{ matrix.arch }}/PassGet.exe
+
+    - name: Upload binaries
+      uses: actions/upload-artifact@v3
+      with:
+        name: PassGet-${{ matrix.arch }}-windows
+        path: build/${{ matrix.arch }}/PassGet.exe
+
+  release:
+    runs-on: ubuntu-20.04
+    needs: build
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v3
+
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        draft: false
+        prerelease: false
+
+    - name: Download artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: PassGet-${{ matrix.arch }}-windows
+        path: .
+
+    - name: Upload Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./build/${{ matrix.arch }}/PassGet.exe
+        asset_name: PassGet-${{ matrix.arch }}-windows.exe
+        asset_content_type: application/octet-stream
