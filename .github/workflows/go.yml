@@ -2,6 +2,8 @@ name: Build and Release
 
 on:
   push:
+    branches:
+      - main
     tags:
       - 'v*'
 
@@ -23,7 +25,7 @@ jobs:
 
     - name: Build binary
       run: |
-        GOOS=windows GOARCH=${{ matrix.arch }} go build -ldflags="-s -w" -trimpath -o build/${{ matrix.arch }}/PassGet.exe main.go
+        GOOS=windows GOARCH=${{ matrix.arch }} go build -ldflags="-s -w" -trimpath -o build/${{ matrix.arch }}/PassGet_${{ matrix.arch }}.exe main.go
 
     - name: Install UPX
       run: |
@@ -31,13 +33,13 @@ jobs:
 
     - name: Compress binary with UPX
       run: |
-        upx build/${{ matrix.arch }}/PassGet.exe
+        upx build/${{ matrix.arch }}/PassGet_${{ matrix.arch }}.exe
 
     - name: Upload binaries
       uses: actions/upload-artifact@v3
       with:
         name: PassGet-${{ matrix.arch }}-windows
-        path: build/${{ matrix.arch }}/PassGet.exe
+        path: build/${{ matrix.arch }}/PassGet_${{ matrix.arch }}.exe
 
   release:
     runs-on: ubuntu-20.04
@@ -69,6 +71,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./build/${{ matrix.arch }}/PassGet.exe
-        asset_name: PassGet-${{ matrix.arch }}-windows.exe
+        asset_path: ./build/${{ matrix.arch }}/PassGet_${{ matrix.arch }}.exe
+        asset_name: PassGet_${{ matrix.arch }}.exe
         asset_content_type: application/octet-stream
