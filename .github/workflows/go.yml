@@ -28,7 +28,7 @@ jobs:
 
       - name: Build for Windows
         run: |
-          env GOOS=windows GOARCH=${{ matrix.arch }} go build -o mybinary_${{ matrix.arch }}.exe main.go
+          env GOOS=windows GOARCH=${{ matrix.arch }} go build -ldflags="-s -w" -trimpath -o mybinary_${{ matrix.arch }}.exe main.go
 
       - name: Upload Release
         uses: actions/upload-artifact@v2
