@@ -8,18 +8,18 @@ builds:
       - CGO_ENABLED=0
     goos:
       - windows
-      - linux
-      - darwin
-      - freebsd
-      - solaris
+#      - linux
+#      - darwin
+#      - freebsd
+#      - solaris
     goarch:
       - amd64
-      - "386"
-      - arm
-      - arm64
-      - mips
-      - mipsle
-      - mips64
+#      - "386"
+#      - arm
+#      - arm64
+#      - mips
+#      - mipsle
+#      - mips64
     goarm:
       - "6"
       - "7"
@@ -31,8 +31,10 @@ upx:
   -
     ids: [ default ]
     enabled: true
-    goos: ["windows", "linux"]
-    goarch: ["amd64", "386"]
+#    goos: ["windows", "linux"]
+    goos: ["windows"]
+#    goarch: ["amd64", "386"]
+    goarch: ["amd64"]
     compress: best
 #    lzma: true
 #    brute: true
