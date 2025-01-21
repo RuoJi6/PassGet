@@ -1,9 +1,14 @@
 name: goreleaser
 
+#on:
+#  push:
+#    tags:
+#      - '*'
 on:
   push:
-    tags:
-      - '*'
+    branches:
+      - main
+      # - '*'
 
 permissions:
   contents: write
