@@ -38,7 +38,7 @@ func GetInstallPath() string {
 		}
 	}
 	if WorkDir == "" {
-		log.Fatal("Can not get install path")
+		log.Println("Can not get install path")
 	}
 	return WorkDir
 }

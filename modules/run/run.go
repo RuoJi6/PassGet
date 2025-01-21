@@ -1,9 +1,9 @@
 package run
 
 import (
-	"PassGet/modules/browser"
 	browser2 "PassGet/modules/utils/browser"
 	"PassGet/modules/utils/browser/fileutil"
+	"fmt"
 	"github.com/urfave/cli/v2"
 	"log"
 	"os"
@@ -86,40 +86,28 @@ func Run() {
 				Name:  "svn",
 				Usage: "Get TortoiseSVN data",
 				Action: func(c *cli.Context) error {
-					err := browser.Get()
-					if err != nil {
-						log.Fatalf("get browser data error %v", err)
-					}
+					fmt.Println("Working on it")
 					return nil
 				},
 			}, {
 				Name:  "xman",
 				Usage: "Get Xmanager data",
 				Action: func(c *cli.Context) error {
-					err := browser.Get()
-					if err != nil {
-						log.Fatalf("get browser data error %v", err)
-					}
+					fmt.Println("Working on it")
 					return nil
 				},
 			}, {
 				Name:  "mxterm",
 				Usage: "Get MobaltXterm data",
 				Action: func(c *cli.Context) error {
-					err := browser.Get()
-					if err != nil {
-						log.Fatalf("get browser data error %v", err)
-					}
+					fmt.Println("Working on it")
 					return nil
 				},
 			}, {
 				Name:  "scrt",
 				Usage: "Get SecureCRT data",
 				Action: func(c *cli.Context) error {
-					err := browser.Get()
-					if err != nil {
-						log.Fatalf("get SecureCRT data error %v", err)
-					}
+					fmt.Println("Working on it")
 					return nil
 				},
 			},
