@@ -1,76 +1,43 @@
-name: Build and Release
+name: goreleaser
 
 on:
   push:
-    branches:
-      - main
     tags:
-      - 'v*'
+      - '*'
+
+permissions:
+  contents: write
 
 jobs:
-  build:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-20.04]
-        arch: [amd64, arm64, 386]
+  goreleaser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
     steps:
-    - name: Check out code
-      uses: actions/checkout@v3
+      - name: "Check out code"
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
-    - name: Set up Go
-      uses: actions/setup-go@v4
-      with:
-        go-version: '1.20'
+      - name: "Set up Go"
+        uses: actions/setup-go@v4
+        with:
+          go-version: 1.20.14
+      -
+        name: Install UPX
+        uses: crazy-max/ghaction-upx@v3
+        with:
+          install-only: true
 
-    - name: Build binary
-      run: |
-        GOOS=windows GOARCH=${{ matrix.arch }} go build -ldflags="-s -w" -trimpath -o build/${{ matrix.arch }}/PassGet_${{ matrix.arch }}.exe main.go
+      - name: UPX version
+        run: upx --version
 
-    - name: Install UPX
-      run: |
-        sudo apt-get install -y upx
-
-    - name: Compress binary with UPX
-      run: |
-        upx build/${{ matrix.arch }}/PassGet_${{ matrix.arch }}.exe
-
-    - name: Upload binaries
-      uses: actions/upload-artifact@v3
-      with:
-        name: PassGet-${{ matrix.arch }}-windows
-        path: build/${{ matrix.arch }}/PassGet_${{ matrix.arch }}.exe
-
-  release:
-    runs-on: ubuntu-20.04
-    needs: build
-    steps:
-    - name: Check out code
-      uses: actions/checkout@v3
-
-    - name: Create Release
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ github.ref }}
-        release_name: Release ${{ github.ref }}
-        draft: false
-        prerelease: false
-
-    - name: Download artifacts
-      uses: actions/download-artifact@v3
-      with:
-        name: PassGet-${{ matrix.arch }}-windows
-        path: .
-
-    - name: Upload Release Asset
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./build/${{ matrix.arch }}/PassGet_${{ matrix.arch }}.exe
-        asset_name: PassGet_${{ matrix.arch }}.exe
-        asset_content_type: application/octet-stream
+      -
+        name: "Create release on GitHub"
+        uses: goreleaser/goreleaser-action@v4
+        with:
+          distribution: goreleaser
+          version: latest
+          args: "release --clean -f .github/conf/.goreleaser.yml"
+          workdir: .
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
