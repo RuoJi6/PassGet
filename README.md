@@ -47,4 +47,5 @@
 | Firefox Nightly    |    ✅     |   ✅    |    ✅     |    ✅    |
 | Internet Explorer  |    ❌     |   ❌    |    ❌     |    ❌    |
 
+##
 ![Start History](https://api.star-history.com/svg?repos=adeljck/PassGet&type=Date)
