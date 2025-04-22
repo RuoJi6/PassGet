@@ -1,4 +1,4 @@
-name: CI Build and Release PassGet
+name: Build and Release PassGet (Windows only)
 
 on:
   push:
@@ -10,11 +10,8 @@ on:
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-        arch: [amd64, arm64]
+    runs-on: windows-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -23,38 +20,35 @@ jobs:
         uses: actions/setup-go@v4
         with:
           go-version: '1.21'
-          cache: 'true'
+          cache: true
 
-      - name: Build PassGet
+      - name: Build PassGet for Windows
         run: |
-          GOOS=${{ matrix.os == 'windows-latest' && 'windows' || matrix.os == 'macos-latest' && 'darwin' || 'linux' }}
-          GOARCH=${{ matrix.arch }}
-          ext=${{ matrix.os == 'windows-latest' && '.exe' || '' }}
-          go build -v -o passget-${GOOS}-${GOARCH}${ext} ./...
+          go build -v -o passget-windows-amd64.exe ./...
 
       - name: Upload Artifact
-        uses: actions/[email protected]
+        uses: actions/upload-artifact@v4
         with:
-          name: passget-${{ matrix.os }}-${{ matrix.arch }}
-          path: passget-*
+          name: passget-windows-amd64
+          path: passget-windows-amd64.exe
 
   release:
     needs: build
     if: startsWith(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
+
     steps:
-      - name: Download all artifacts
-        uses: actions/[email protected]
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
         with:
+          name: passget-windows-amd64
           path: ./dist
 
       - name: Create GitHub Release
-        id: gh_release
-        uses: softprops/[email protected]
+        uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ github.ref_name }}
           name: PassGet ${{ github.ref_name }}
-          files: |
-            dist/*
+          files: dist/passget-windows-amd64.exe
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
