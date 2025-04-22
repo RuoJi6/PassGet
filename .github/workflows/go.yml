@@ -1,10 +1,10 @@
-name: Go Build
+name: Build and Release PassGet
 
 on:
   push:
-    branches: [ "main" ]  # 触发分支
-  pull_request:
-    branches: [ "main" ]
+    tags:
+      - 'v*'  # 当推送v开头的标签时触发（例如 v1.0）
+  workflow_dispatch:  # 允许手动触发
 
 jobs:
   build:
@@ -15,10 +15,23 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          go-version: '1.21'  # 指定Go版本
+          go-version: '1.21'
 
       - name: Build
-        run: go build -v ./...  # 编译整个项目
+        run: go build -v -o passget.exe ./...  # 输出为passget.exe
 
-      - name: Test
-        run: go test -v ./...  # 运行测试
+      - name: Create Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: PassGet ${{ github.ref_name }}
+          body: |
+            PassGet ${{ github.ref_name }} Windows 版本
+            构建于 ${{ github.run_id }}
+          draft: false
+          prerelease: false
+          files: |
+            passget.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
