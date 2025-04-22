@@ -24,7 +24,7 @@ jobs:
 
       - name: Build PassGet for Windows
         run: |
-          go build -v -o passget-windows-amd64.exe ./...
+          go build -v -o passget-windows-amd64.exe .
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
