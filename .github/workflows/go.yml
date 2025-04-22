@@ -1,0 +1,24 @@
+name: Go Build
+
+on:
+  push:
+    branches: [ "main" ]  # 触发分支
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.21'  # 指定Go版本
+
+      - name: Build
+        run: go build -v ./...  # 编译整个项目
+
+      - name: Test
+        run: go test -v ./...  # 运行测试
