@@ -1,0 +1,60 @@
+name: CI Build and Release PassGet
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        arch: [amd64, arm64]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.21'
+          cache: 'true'
+
+      - name: Build PassGet
+        run: |
+          GOOS=${{ matrix.os == 'windows-latest' && 'windows' || matrix.os == 'macos-latest' && 'darwin' || 'linux' }}
+          GOARCH=${{ matrix.arch }}
+          ext=${{ matrix.os == 'windows-latest' && '.exe' || '' }}
+          go build -v -o passget-${GOOS}-${GOARCH}${ext} ./...
+
+      - name: Upload Artifact
+        uses: actions/[email protected]
+        with:
+          name: passget-${{ matrix.os }}-${{ matrix.arch }}
+          path: passget-*
+
+  release:
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all artifacts
+        uses: actions/[email protected]
+        with:
+          path: ./dist
+
+      - name: Create GitHub Release
+        id: gh_release
+        uses: softprops/[email protected]
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: PassGet ${{ github.ref_name }}
+          files: |
+            dist/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
